@@ -41,7 +41,7 @@
 						<businessGroupId>${anypoint.platform.business-group.id}</businessGroupId>
 						<properties>
 							<anypoint.platform.client_id>${anypoint.platform.api.client-id}</anypoint.platform.client_id>
-							<anypoint.platform.client_secret>${anypoint.platform.api.client-id}</anypoint.platform.client_secret>
+							<anypoint.platform.client_secret>${anypoint.platform.api.client-secret}</anypoint.platform.client_secret>
 						</properties>
 						<connectedAppClientId>${anypoint.platform.connected-app.client-id}</connectedAppClientId>
 						<connectedAppClientSecret>${anypoint.platform.connected-app.client-secret}</connectedAppClientSecret>
