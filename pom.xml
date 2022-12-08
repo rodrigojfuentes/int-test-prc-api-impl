@@ -4,7 +4,7 @@
 
 	<groupId>c4f668c6-4fc2-449b-ba9b-6e20a7dc7f82</groupId>
 	<artifactId>int-test-prc-api-impl</artifactId>
-	<version>1.0.0</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
 	<name>int-test-prc-api</name>
