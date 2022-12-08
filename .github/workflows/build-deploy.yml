@@ -1,36 +1,53 @@
-# This is a basic workflow to help you get started with Actions
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: CI
+name: Package Mule Application
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build_and_deploy:
+
     runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ## CloudHub 2.0 Properties -- Reference: https://docs.mulesoft.com/mule-runtime/4.4/mmp-concept
+      CLOUDHUB2_APPLICATION_RUNTIME: 4.4.0
+      CLOUDHUB2_APPLICATION_NAME: int-test-prc-api-v1-dev
+      CLOUDHUB2_PRIVATE_SPACE_NAME: rjf-anypoint-sandbox-ps
+      CLOUDHUB2_ENVIRONMENT: DEV
+      CLOUDHUB2_REPLICAS_NUMBER: 1
+      CLOUDHUB2_REPLICAS_SIZE: 0.1
+      ANYPOINT_PLATFORM_BUSINESS_GROUP_ID: 829ba252-3388-45b7-9bbe-202e5d7156f7
+      
+      ## CloudHub 2.0 and Exchange properties
+      ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
+      ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+      ## Deployment properties
+      M2_HOME: /home/runner/.m2
+      
+      ## --- Notes ---
+      # To Skip MUnit Tests: Add -DskipMunitTests to the run command at the bottom
+      # How to reference a GitHub Secret: ${{ secrets.SECRET_NAME }}
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+    - name: maven-settings-xml-action
+      uses: whelk-io/maven-settings-xml-action@v20
+      with:
+        repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
+        plugin_repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
+        servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
+    - name: Publish to Exchange
+      run: mvn clean deploy -s $M2_HOME/settings.xml -f pom.xml -Dcloudhub2.application.runtime="${CLOUDHUB2_APPLICATION_RUNTIME}" -Dcloudhub2.application.name="${CLOUDHUB2_APPLICATION_NAME}" -Dcloudhub2.private-space.name="${CLOUDHUB2_PRIVATE_SPACE_NAME}" -Dcloudhub2.environment="${CLOUDHUB2_ENVIRONMENT}" -Dcloudhub2.replicas.number="${CLOUDHUB2_REPLICAS_NUMBER}" -Dcloudhub2.replicas.size="${CLOUDHUB2_REPLICAS_SIZE}" -Danypoint.platform.business-group.id="${ANYPOINT_PLATFORM_BUSINESS_GROUP_ID}" -Danypoint.platform.api.client-id="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}" -Danypoint.platform.api.client-secret="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" -DskipMunitTests
+    - name: Deploy to Cloudhub
+      run: mvn clean deploy -DmuleDeploy -s $M2_HOME/settings.xml -f pom.xml -Dcloudhub2.application.runtime="${CLOUDHUB2_APPLICATION_RUNTIME}" -Dcloudhub2.application.name="${CLOUDHUB2_APPLICATION_NAME}" -Dcloudhub2.private-space.name="${CLOUDHUB2_PRIVATE_SPACE_NAME}" -Dcloudhub2.environment="${CLOUDHUB2_ENVIRONMENT}" -Dcloudhub2.replicas.number="${CLOUDHUB2_REPLICAS_NUMBER}" -Dcloudhub2.replicas.size="${CLOUDHUB2_REPLICAS_SIZE}" -Danypoint.platform.business-group.id="${ANYPOINT_PLATFORM_BUSINESS_GROUP_ID}" -Danypoint.platform.api.client-id="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}" -Danypoint.platform.api.client-secret="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" -DskipMunitTests
