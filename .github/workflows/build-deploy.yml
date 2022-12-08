@@ -20,7 +20,9 @@ jobs:
       CLOUDHUB2_ENVIRONMENT: DEV
       CLOUDHUB2_REPLICAS_NUMBER: 1
       CLOUDHUB2_REPLICAS_SIZE: 0.1
-      ANYPOINT_PLATFORM_BUSINESS_GROUP_ID: 829ba252-3388-45b7-9bbe-202e5d7156f7
+      ANYPOINT_PLATFORM_BUSINESS_GROUP_ID: ${{ secrets.ANYPOINT_PLATFORM_BUSINESS_GROUP_ID }}
+      ANYPOINT_PLATFORM_API_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_API_CLIENT_ID }}
+      ANYPOINT_PLATFORM_API_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_API_CLIENT_SECRET }}
       
       ## CloudHub 2.0 and Exchange properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
@@ -50,4 +52,4 @@ jobs:
     - name: Publish to Exchange
       run: mvn clean deploy -s $M2_HOME/settings.xml -f pom.xml -DskipMunitTests
     - name: Deploy to Cloudhub
-      run: mvn clean deploy -U -DmuleDeploy -s $M2_HOME/settings.xml -f pom.xml -Dcloudhub2.application.runtime="${CLOUDHUB2_APPLICATION_RUNTIME}" -Dcloudhub2.application.name="${CLOUDHUB2_APPLICATION_NAME}" -Dcloudhub2.private-space.name="${CLOUDHUB2_PRIVATE_SPACE_NAME}" -Dcloudhub2.environment="${CLOUDHUB2_ENVIRONMENT}" -Dcloudhub2.replicas.number="${CLOUDHUB2_REPLICAS_NUMBER}" -Dcloudhub2.replicas.size="${CLOUDHUB2_REPLICAS_SIZE}" -Danypoint.platform.business-group.id="${ANYPOINT_PLATFORM_BUSINESS_GROUP_ID}" -Danypoint.platform.api.client-id="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}" -Danypoint.platform.api.client-secret="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" -DskipMunitTests
+      run: mvn clean deploy -U -DmuleDeploy -s $M2_HOME/settings.xml -f pom.xml -Dcloudhub2.application.runtime="${CLOUDHUB2_APPLICATION_RUNTIME}" -Dcloudhub2.application.name="${CLOUDHUB2_APPLICATION_NAME}" -Dcloudhub2.private-space.name="${CLOUDHUB2_PRIVATE_SPACE_NAME}" -Dcloudhub2.environment="${CLOUDHUB2_ENVIRONMENT}" -Dcloudhub2.replicas.number="${CLOUDHUB2_REPLICAS_NUMBER}" -Dcloudhub2.replicas.size="${CLOUDHUB2_REPLICAS_SIZE}" -Danypoint.platform.business-group.id="${ANYPOINT_PLATFORM_BUSINESS_GROUP_ID}" -Danypoint.platform.api.client-id="${ANYPOINT_PLATFORM_API_CLIENT_ID}" -Danypoint.platform.api.client-secret="${ANYPOINT_PLATFORM_API_CLIENT_SECRET}" -Danypoint.platform.connected-app.client-id="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}" -Danypoint.platform.connected-app.client-secret="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" -DskipMunitTests
