@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Package Mule Application
+name: Package and Deploy Mule Application
 
 on:
   push:
@@ -46,7 +46,7 @@ jobs:
       with:
         repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         plugin_repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
-        servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
+        servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }, { "id": "Repository", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
     - name: Publish to Exchange
       run: mvn clean deploy -s $M2_HOME/settings.xml -f pom.xml -Dcloudhub2.application.runtime="${CLOUDHUB2_APPLICATION_RUNTIME}" -Dcloudhub2.application.name="${CLOUDHUB2_APPLICATION_NAME}" -Dcloudhub2.private-space.name="${CLOUDHUB2_PRIVATE_SPACE_NAME}" -Dcloudhub2.environment="${CLOUDHUB2_ENVIRONMENT}" -Dcloudhub2.replicas.number="${CLOUDHUB2_REPLICAS_NUMBER}" -Dcloudhub2.replicas.size="${CLOUDHUB2_REPLICAS_SIZE}" -Danypoint.platform.business-group.id="${ANYPOINT_PLATFORM_BUSINESS_GROUP_ID}" -Danypoint.platform.api.client-id="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}" -Danypoint.platform.api.client-secret="${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" -DskipMunitTests
     - name: Deploy to Cloudhub
