@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Package Mule Application
+name: Release Mule Application
 
 on:
   push:
@@ -42,11 +42,14 @@ jobs:
     - name: Release Prepare
       run: |
         mvn release:prepare -s $M2_HOME/settings.xml \
-          --batch-mode -D=scmCommentPrefix="[skip ci] " \
+          --batch-mode \
+          -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
     - name: Release Perform
       run: |
         mvn release:perform -s $M2_HOME/settings.xml \
-          --batch-mode -DlocalCheckout=true \
+          --batch-mode \
+          -DGitRepositoryUrl=${{ github.event.repository.name }} \
+          -DlocalCheckout=true \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests

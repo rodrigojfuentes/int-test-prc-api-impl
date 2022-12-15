@@ -117,4 +117,10 @@
 		</repository>
 	</distributionManagement>
 
+	<scm>
+		<connection>scm:git:${GitRepositoryUrl}</connection>
+		<developerConnection>scm:git:${GitRepositoryUrl}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
 </project>
