@@ -16,7 +16,7 @@ jobs:
       ## Build properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
-      GITHUB_REPOSITORY_NAME: https://github.com/rodrigojfuentes/int-test-prc-api-impl.git
+      GITHUB_REPOSITORY_URL: ${{ github.repositoryUrl }}
 
       ## Deployment properties
       M2_HOME: /home/runner/.m2
@@ -33,14 +33,14 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: maven-settings-xml-action
+    - name: Generate settings.xml
       uses: whelk-io/maven-settings-xml-action@v21
       with:
         repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         plugin_repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" },
           { "id": "Repository", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
-    - name: Set user info
+    - name: Set git user info
       run: |
         git config --global user.email "rodrigojfuentes@gmail.com"
         git config --global user.name "Rodrigo Fuentes"
@@ -48,7 +48,7 @@ jobs:
       run: |
         mvn release:prepare -s $M2_HOME/settings.xml \
           --batch-mode \
-          -DGitRepositoryUrl=${GITHUB_REPOSITORY_NAME} \
+          -DGitRepositoryUrl=$GITHUB_REPOSITORY_NAME \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
     - name: Release Perform
@@ -56,6 +56,6 @@ jobs:
         mvn release:perform -s $M2_HOME/settings.xml \
           --batch-mode \
           -DlocalCheckout=true \
-          -DGitRepositoryUrl=${GITHUB_REPOSITORY_NAME} \
+          -DGitRepositoryUrl=$GITHUB_REPOSITORY_URL \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
