@@ -11,6 +11,16 @@ on:
         default: dev
         required: true
         type: environment
+      replicas:
+        description: 'Number of replicas'
+        default: 1
+        required: false
+        type: choice
+      replicaSize:
+        description: 'Size of replica (Number of vCores)'
+        default: 0.1
+        required: false
+        type: choice
 
 jobs:
   deploy:
@@ -21,10 +31,22 @@ jobs:
       ## CloudHub 2.0 Properties -- Reference: https://docs.mulesoft.com/mule-runtime/4.4/mmp-concept
       CLOUDHUB2_APPLICATION_RUNTIME: 4.4.0
       CLOUDHUB2_APPLICATION_NAME: int-test-prc-api-v1-${{ inputs.environment }}
-      CLOUDHUB2_PRIVATE_SPACE_NAME: rjf-anypoint-sandbox-ps
-      CLOUDHUB2_ENVIRONMENT: DEV
-      CLOUDHUB2_REPLICAS_NUMBER: 1
-      CLOUDHUB2_REPLICAS_SIZE: 0.1
+      CLOUDHUB2_PRIVATE_SPACE_NAME: >
+        ${{ fromJson('{
+          "dev": "rjf-anypoint-sandbox-ps",
+          "testing": "rjf-anypoint-sandbox-ps",
+          "staging": "rjf-anypoint-prod-ps",
+          "prod": "rjf-anypoint-prod-ps"
+        }')[github.event.inputs.environment] }}
+      CLOUDHUB2_ENVIRONMENT: >
+        ${{ fromJson('{
+          "dev": "DEV",
+          "testing": "TESTING",
+          "staging": "STAGING",
+          "prod": "PROD"
+        }')[github.event.inputs.environment] }}
+      CLOUDHUB2_REPLICAS_NUMBER: ${{ inputs.replicas }}
+      CLOUDHUB2_REPLICAS_SIZE: ${{ inputs.replicaSize }}
       ANYPOINT_PLATFORM_BUSINESS_GROUP_ID: ${{ secrets.ANYPOINT_PLATFORM_BUSINESS_GROUP_ID }}
       ANYPOINT_PLATFORM_API_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_API_CLIENT_ID }}
       ANYPOINT_PLATFORM_API_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_API_CLIENT_SECRET }}
@@ -46,17 +68,13 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: maven-settings-xml-action
+    - name: Generate settings.xml
       uses: whelk-io/maven-settings-xml-action@v21
       with:
         repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         plugin_repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" },
           { "id": "Repository", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
-    - name: Publish to Exchange
-      run: |
-        mvn clean deploy -s $M2_HOME/settings.xml \
-          -DskipMunitTests
     - name: Deploy to Cloudhub
       run: |
         mvn clean deploy -DmuleDeploy -s $M2_HOME/settings.xml \
