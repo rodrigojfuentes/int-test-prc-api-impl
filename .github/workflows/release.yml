@@ -16,7 +16,7 @@ jobs:
       ## Build properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
-      GITHUB_REPOSITORY_URL: "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" # https://github.com/rodrigojfuentes/int-test-prc-api-impl.git
+      GITHUB_REPOSITORY_URL: "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" # https://github.com/rodrigojfuentes/int-test-prc-api-impl.git
 
       ## Deployment properties
       M2_HOME: /home/runner/.m2
