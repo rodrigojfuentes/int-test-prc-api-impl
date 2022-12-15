@@ -16,6 +16,7 @@ jobs:
       ## Build properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
+      GITHUB_REPOSITORY_NAME: https://github.com/rodrigojfuentes/int-test-prc-api-impl.git
 
       ## Deployment properties
       M2_HOME: /home/runner/.m2
@@ -47,13 +48,14 @@ jobs:
       run: |
         mvn release:prepare -s $M2_HOME/settings.xml \
           --batch-mode \
+          -DGitRepositoryUrl=${GITHUB_REPOSITORY_NAME} \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
     - name: Release Perform
       run: |
         mvn release:perform -s $M2_HOME/settings.xml \
           --batch-mode \
-          -DGitRepositoryUrl="${{ github.event.repository.name }}" \
           -DlocalCheckout=true \
+          -DGitRepositoryUrl=${GITHUB_REPOSITORY_NAME} \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
