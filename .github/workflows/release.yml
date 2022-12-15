@@ -27,8 +27,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Store repository URL
-      run: echo "git config --get remote.origin.url" >> $GITHUB_REPOSITORY_URL
+    #- name: Store repository URL
+    #  run: echo "GITHUB_REPOSITORY_URL=$(git config --get remote.origin.url)" >> $GITHUB_ENV
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
@@ -50,7 +50,7 @@ jobs:
       run: |
         mvn release:prepare -s $M2_HOME/settings.xml \
           --batch-mode \
-          -DGitRepositoryUrl=$GITHUB_REPOSITORY_NAME \
+          -DGitRepositoryUrl=${{ github.repositoryUrl }} \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
     - name: Release Perform
@@ -58,6 +58,6 @@ jobs:
         mvn release:perform -s $M2_HOME/settings.xml \
           --batch-mode \
           -DlocalCheckout=true \
-          -DGitRepositoryUrl=$GITHUB_REPOSITORY_URL \
+          -DGitRepositoryUrl=${{ github.repositoryUrl }} \
           -D=scmCommentPrefix="[skip ci] " \
           -Darguments=-DskipTests
