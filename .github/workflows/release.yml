@@ -16,7 +16,7 @@ jobs:
       ## Build properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
-      GITHUB_REPOSITORY_URL: ${{ github.repositoryUrl }}
+      ## GITHUB_REPOSITORY_URL: ${{ github.repositoryUrl }}
 
       ## Deployment properties
       M2_HOME: /home/runner/.m2
@@ -27,6 +27,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Store repository URL
+      run: echo "git config --get remote.origin.url" >> $GITHUB_REPOSITORY_URL
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
