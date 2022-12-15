@@ -11,6 +11,7 @@ on:
         required: true
         type: environment
   workflow_run:
+    workflows: [ Deploy Mule Application ]
     branches: [ "develop" ]
 
 jobs:
