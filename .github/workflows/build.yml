@@ -12,8 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: prod
     env:
+      ## Build properties
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID }}
       ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET: ${{ secrets.ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET }}
 
@@ -39,6 +39,10 @@ jobs:
         plugin_repositories: '[{ "id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/" }]'
         servers: '[{ "id": "anypoint-exchange-v3", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" },
           { "id": "Repository", "username": "~~~Client~~~", "password": "${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_ID}~?~${ANYPOINT_PLATFORM_CONNECTED_APP_CLIENT_SECRET}" }]'
+    - name: Set user info
+      run: |
+        git config --global user.email "rodrigojfuentes@gmail.com"
+        git config --global user.name "Rodrigo Fuentes"
     - name: Release Prepare
       run: |
         mvn release:prepare -s $M2_HOME/settings.xml \
