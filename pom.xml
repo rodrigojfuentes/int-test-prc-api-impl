@@ -4,7 +4,7 @@
 
 	<groupId>c4f668c6-4fc2-449b-ba9b-6e20a7dc7f82</groupId>
 	<artifactId>int-test-prc-api-impl</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
 	<name>int-test-prc-api</name>
@@ -120,7 +120,7 @@
 	<scm>
 		<connection>scm:git:${GitRepositoryUrl}</connection>
 		<developerConnection>scm:git:${GitRepositoryUrl}</developerConnection>
-		<tag>int-test-prc-api-impl-0.0.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 </project>
