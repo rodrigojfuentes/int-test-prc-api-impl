@@ -7,20 +7,40 @@ on:
   workflow_dispatch:
     inputs:
       environment:
+        type: environment
         description: 'Environment to deploy application'
         default: dev
         required: true
-        type: environment
       replicas:
+        type: choice
         description: 'Number of replicas'
         default: 1
         required: false
-        type: choice
+        options: 
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
       replicaSize:
+        type: choice
         description: 'Size of replica (Number of vCores)'
         default: 0.1
         required: false
-        type: choice
+        options: 
+        - 0.1
+        - 0.2
+        - 0.5
+        - 1
+        - 1.5
+        - 2
+        - 2.5
+        - 3
+        - 3.5
+        - 4
 
 jobs:
   deploy:
